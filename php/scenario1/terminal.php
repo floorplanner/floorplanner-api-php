@@ -27,6 +27,9 @@ foreach ($users as $user) {
 $token = $user->getToken();
 print "\nToken for user #{$user->id}: {$token}\n\n";
 
+# Now, connect to the Floorplanner server with an authentication token. 
+# This eassentially means that you will be logged in as the user the token 
+# is generated for. Note that the API key is still required.
 $user_fp = Floorplanner::connectWithToken($config['api_key'], $token);
 
 # Get a list of all the projects accessible with the current API key

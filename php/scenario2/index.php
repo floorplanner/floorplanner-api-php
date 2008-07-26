@@ -1,7 +1,11 @@
 <?php
 
-require '../classes/Floorplanner.php';
-require 'config.php';
+# include the Floorplanner API classes
+set_include_path(get_include_path() . PATH_SEPARATOR . dirname(__FILE__) . '/../classes' );
+require_once 'Floorplanner.php';
+
+# load the API key from the config file
+require_once './config.php';
 
 session_start();
 
