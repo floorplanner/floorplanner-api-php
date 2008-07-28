@@ -10,13 +10,13 @@ $fp = Floorplanner::connect($config['api_key']);
 $page = (empty($_GET['page'])) ? 1 : intval($_GET['page']);
 if ($page < 1) $page = 1;
 
-$account  = $fp->getAccount($_GET['account_id']);
-$projects = $account->getProjects();
+$user  = $fp->getUser($_GET['user_id']);
+$projects = $user->getProjects();
 ?>
 
-<h1> Account info </h1>
+<h1> User info </h1>
 
-<p> E-mail: <a href="mailto:<?=htmlspecialchars($account->email)?>"><?=htmlspecialchars($account->email)?></a></p>
+<p> E-mail: <a href="mailto:<?=htmlspecialchars($user->email)?>"><?=htmlspecialchars($user->email)?></a></p>
 	
 
 <h2> Projects </h2>

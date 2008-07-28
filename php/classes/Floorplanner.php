@@ -2,7 +2,7 @@
 
 require_once 'Floorplanner/Exception.php';
 require_once 'Floorplanner/Object.php';
-require_once 'Floorplanner/Account.php';
+require_once 'Floorplanner/User.php';
 require_once 'Floorplanner/Project.php';
 require_once 'Floorplanner/Floor.php';
 require_once 'Floorplanner/Design.php';
@@ -53,7 +53,7 @@ class Floorplanner {
 	
 	public function factory($type) {
 		switch (strtolower($type)) {
-			case 'account': return new Floorplanner_Account($this); break;
+			case 'user': return new Floorplanner_User($this); break;
 			case 'project': return new Floorplanner_Project($this); break;
 			case 'floor':   return new Floorplanner_Floor($this); break;	
 			case 'design':  return new Floorplanner_Design($this); break;	
@@ -70,20 +70,20 @@ class Floorplanner {
 	}
 	
 	//////////////////////////////////////////////////////////////
-	// PROJECT & ACCOUNT FUNCTIONS
+	// PROJECT & USER FUNCTIONS
 	// Use the following functions to interact with Floorplanner
 	// projects. Projects give access to the related floors and
 	// designs.
 	//////////////////////////////////////////////////////////////
 	
-	public function getAccounts($page = 1, $per_page = 100) {
+	public function getUsers($page = 1, $per_page = 100) {
 		$data = array('page' => $page, 'per_page' => $per_page);
-		$response = $this->apiCall('/accounts.xml', 'GET', $data);
+		$response = $this->apiCall('/users.xml', 'GET', $data);
 		if (Floorplanner::success($response)) {
 			$xml = Floorplanner::parseXMLResponse($response);
 			$result = array();
 			foreach ($xml->user as $user) {
-				$result[] = Floorplanner_Account::fromXML($this, $user);
+				$result[] = Floorplanner_User::fromXML($this, $user);
 			}
 			return $result;
 		}
@@ -92,12 +92,12 @@ class Floorplanner {
 		}		
 	}
 
-	public function getAccount($id) {
+	public function getUser($id) {
 
-		$response = $this->apiCall("/accounts/{$id}.xml", 'GET');
+		$response = $this->apiCall("/users/{$id}.xml", 'GET');
 		if (Floorplanner::success($response)) {		
 			$xml = Floorplanner::parseXMLResponse($response);
-			return Floorplanner_Account::fromXML($this, $xml);
+			return Floorplanner_User::fromXML($this, $xml);
 		} else {
 			throw new Floorplanner_Exception($response);
 		}		
@@ -145,7 +145,7 @@ class Floorplanner {
 	
 	public function getToken() {
 		if (is_null($this->token)) {
-			$response = $this->apiCall('/accounts/me/token', 'GET');
+			$response = $this->apiCall('/users/me/token', 'GET');
 			if (Floorplanner::success($response)) {
 				$this->token = $response['data'];
 			} else {

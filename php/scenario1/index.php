@@ -9,13 +9,13 @@ $fp = Floorplanner::connect($config['api_key']);
 $page = (empty($_GET['page'])) ? 1 : intval($_GET['page']);
 if ($page < 1) $page = 1;
 
-$accounts = $fp->getAccounts($page, 30);
+$users = $fp->get/Users($page, 30);
 ?>
 
-<h1> Accounts </h1>
+<h1> Users </h1>
 <ul>
-<?php foreach ($accounts as $account) : ?>
-	<li><a href="projects.php?account_id=<?=$account->id?>"><?=$account->email?></a></li>	
+<?php foreach ($users as $user) : ?>
+	<li><a href="projects.php?user_id=<?=$user->id?>"><?=$user->email?></a></li>	
 <?php endforeach; ?>
 </ul>
 

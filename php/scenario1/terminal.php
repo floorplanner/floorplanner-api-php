@@ -18,7 +18,7 @@ $fp = Floorplanner::connect($config['api_key']);
 
 # Now, lets do something useful.
 # Get a list of all the users accessible with the current API key.
-$users = $fp->getAccounts();
+$users = $fp->getUsers();
 foreach ($users as $user) {
 	print $user->email . " (#{$user->id})\n";
 }

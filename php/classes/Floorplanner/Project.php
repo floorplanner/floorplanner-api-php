@@ -6,7 +6,7 @@ class Floorplanner_Project extends Floorplanner_Object {
 	
 	public function getToken() {
 		if (is_null($this->_token)) {
-			$response = $this->apiCall('/accounts/' . $this->getAttribute('user-id') . '/token', 'GET');
+			$response = $this->apiCall('/users/' . $this->getAttribute('user-id') . '/token', 'GET');
 			if (Floorplanner::success($response)) {
 				$this->_token = $response['data'];
 			} else {

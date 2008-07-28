@@ -13,7 +13,7 @@ if (count($argv) <= 1) {
 	try {
 		print "Trying to get a list of users with an API only account...\n";
 		$tokenless_fp = Floorplanner::connect($config['api_key']);
-		$tokenless_fp->getAccounts();
+		$tokenless_fp->getUsers();
 		print "It succeeded. This should not happen!!!";
 	} catch (Floorplanner_Exception $fe) {
 		print "It failed miserably, as expected.\n";
