@@ -9,7 +9,7 @@ $fp = Floorplanner::connect($config['api_key']);
 $page = (empty($_GET['page'])) ? 1 : intval($_GET['page']);
 if ($page < 1) $page = 1;
 
-$users = $fp->get/Users($page, 30);
+$users = $fp->getUsers($page, 30);
 ?>
 
 <h1> Users </h1>

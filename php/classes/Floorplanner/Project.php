@@ -41,13 +41,12 @@ class Floorplanner_Project extends Floorplanner_Object {
 		return $this->_attributes['project-url'];
 	}
 	
-	public function embedScript($div, $token = null, $mode = null) {
-		if (is_null($mode)) $mode = 'Floorplanner.STATE_EDIT';
-		$project_hash = $this->hash();
+	public function embedScript($div, $token = null, $state = null) {
+		if (is_null($state)) $state = 'Floorplanner.STATE_EDIT';
 		if (is_null($token)) {
-			$javascript  = "var fp = new Floorplanner('${project_hash}', {config: ${mode}, auth_token: '${token}'});\n";
+			$javascript  = "var fp = new Floorplanner({project_id:$this->id, state: ${state}, auth_token: '${token}'});\n";
 		} else {
-			$javascript  = "var fp = new Floorplanner('${project_hash}', {config: ${mode}});\n";
+			$javascript  = "var fp = new Floorplanner({project_id:$this->id, state: ${state}});\n";
 		}
 		
 		$javascript .= "fp.embed('${div}');\n";

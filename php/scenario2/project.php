@@ -23,7 +23,7 @@ $project = $fp->getProject($_GET['id']);
 	<script type="text/javascript">
 	<!--
 		
-		var fp = new Floorplanner('<?=$project->hash()?>', {config: Floorplanner.STATE_EDIT, auth_token: '<?=$fp->token?>'});
+		var fp = new Floorplanner({project_id: <?=$project->id?>, state: Floorplanner.STATE_EDIT, auth_token: '<?=$fp->token?>'});
 		window.onload = function() {
 			fp.embed('floorplanner');
 		};
