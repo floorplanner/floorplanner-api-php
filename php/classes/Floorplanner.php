@@ -13,7 +13,7 @@ class Floorplanner {
 	public $api_key;
 	public $token;
 	
-	const DEFAULT_HOST = 'beta.floorplanner.com';
+	const DEFAULT_HOST = 'www.floorplanner.com';
 	
 	/**
 	 * Creates a new Floorplanner API consumer object. This function is used
@@ -64,7 +64,7 @@ class Floorplanner {
 	
 	
 	public function javascriptIncludes() {
-		$result  = '<script type="text/javascript" src="http://' . $this->host . '/javascripts/floorplanner/swfobject_20.js"></script>' . "\n";
+		$result  = '<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/swfobject/2.1/swfobject.js"></script>' . "\n";
 		$result .= '<script type="text/javascript" src="http://' . $this->host . '/javascripts/floorplanner/floorplanner.js"></script>' . "\n";
 		return $result;
 	}

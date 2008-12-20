@@ -16,7 +16,7 @@ $project = $fp->getProject($_GET['id']);
 <html>
 <head>
 	<title><?=htmlspecialchars($project->name)?></title>
-	<script type="text/javascript" src="http://beta.floorplanner.com/javascripts/prototype.js"></script>	
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/prototype/1.6.0.3/prototype.js"></script>	
 
 	<?= $fp->javascriptIncludes(); ?>
 

@@ -11,7 +11,7 @@ session_start();
 
 if (empty($_GET['token'])) { ?>
 	
-	<p><a href="http://beta.floorplanner.com/authorize/<?=$config['authorization_id']?>/additional_info_123">Log in</a> with your Floorplanner account</p>
+	<p><a href="http://www.floorplanner.com/authorize/<?=$config['authorization_id']?>/additional_info_123">Log in</a> with your Floorplanner account</p>
 
 <?php } else {
 	

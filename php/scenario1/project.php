@@ -22,7 +22,7 @@ if (empty($_SESSION['user_id']) || $_SESSION['user_id'] != $_GET['user_id']) {
 <head>
 	<title> Floorplanner integration </title>
 	<?= $fp->javascriptIncludes(); ?>
-	<script type="text/javascript" src="http://beta.floorplanner.com/javascripts/prototype.js"></script>
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/prototype/1.6.0.3/prototype.js"></script>
 </head>
 <body>
 <h1> Project: <?=htmlspecialchars($project->name)?> </h1>
