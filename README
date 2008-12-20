@@ -21,9 +21,9 @@ plan to add some Rails examples as soon as possible.
 
 LICENSE
 -------------------------------------------------------------------------------
-This code is released under the BSD license.
+This code is released under the MIT license.
 
-Although the BSD license does not require giving back your changes, we would
+Although the MIT license does not require giving back your changes, we would
 really appreciate it, so we can polish these files and make it as easy as 
 possible for others to access our API.
 
@@ -31,4 +31,4 @@ possible for others to access our API.
 SUPPORT
 -------------------------------------------------------------------------------
 If you have any technical questions regarding the use of the API, do not 
-hesitate to contact me.
+hesitate to contact us.
