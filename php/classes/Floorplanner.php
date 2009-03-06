@@ -143,6 +143,18 @@ class Floorplanner {
 		}
 	}
 	
+	public function createProject($project_xml) {
+		$response = $this->apiCall("/projects.xml", 'POST', $project_xml, array('Content-Type'=>'application/xml'));
+		if (Floorplanner::success($response)) {		
+			$xml = Floorplanner::parseXMLResponse($response);
+			return Floorplanner_Project::fromXML($this, $xml, 
+						array(  'floors'  => 'Floorplanner_Floor',
+								'designs' => 'Floorplanner_Design'));
+		} else {
+			throw new Floorplanner_Exception($response);
+		}		
+	}
+	
 	public function getToken() {
 		if (is_null($this->token)) {
 			$response = $this->apiCall('/users/me/token', 'GET');
@@ -233,9 +245,9 @@ class Floorplanner {
 				$params['_method'] = strtoupper($method);
 			case 'POST': 		
 				curl_setopt($ch, CURLOPT_POST, true);
-				if (is_array($params) && count($params) > 0) {
+//				if (is_array($params) && count($params) > 0) {
 					curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
-				}
+//				}
 				break;
 			default: // GET request
 				if (is_array($params) && count($params) > 0) {
