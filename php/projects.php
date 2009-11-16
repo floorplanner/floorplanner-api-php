@@ -20,7 +20,7 @@ $projects = $fp->getProjects();
 		
 		<table>
 		<?php
-			if (count($projects)) {
+			if ($projects && count($projects)) {
 				foreach($projects as $project) {
 					print "<tr><td><a href=\"project.php?pid={$project->id}\">" . $project->name . "</td></tr>";
 				}

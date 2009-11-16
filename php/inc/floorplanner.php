@@ -26,7 +26,7 @@ class Floorplanner {
 	/**
 	 *
 	 */
-	private function apiCall($path, $method="GET") {
+	private function apiCall($path, $method="GET", $payload=NULL) {
 		$fp = fsockopen($this->_host, $this->_port, $errno, $errstr, $this->_timeout);
 		
 		$this->responseHeaders = array();
@@ -40,8 +40,17 @@ class Floorplanner {
 		
 			$out = "$method $path HTTP/1.1\r\n";
 		    $out .= "Host: " . $this->_host . "\r\n";
+			
+			if ($payload) {
+				$out .= "Content-Length: " . strlen($payload) . "\r\n";
+			}
+			
 			$out .= "Authorization: Basic $auth\r\n";
 		    $out .= "Connection: Close\r\n\r\n";
+			
+			if ($payload != NULL) {
+				$out .= $payload;
+			}
 			
 			// write to stream
 			fwrite($fp, $out);
@@ -68,6 +77,16 @@ class Floorplanner {
 			}
 
 			return TRUE;
+		}
+	}
+	
+	public function deleteProject($id) {
+		$path = "/projects/{$id}.xml";
+		$project = new FloorplannerProject(NULL);
+		$project->id = $id;
+		$payload = $project->toXml();
+		
+		if ($this->apiCall($path, "DELETE", $payload)) {
 		}
 	}
 	
@@ -170,6 +189,17 @@ class FloorplannerObject {
 		$html .= "</form>";
 		return $html;
 	}
+	
+	public function toXml($name="user") {
+		$xml = "<$name>";
+		foreach($this->data as $key=>$val) {
+			$xml .= "<$key>";
+			$xml .= $val;
+			$xml .= "</$key>";
+		}
+		$xml .= "</$name>";
+		return $xml;
+	}
 }
 
 class FloorplannerDesign extends FloorplannerObject  {
@@ -193,6 +223,10 @@ class FloorplannerProject extends FloorplannerObject  {
 		$fields = array("name", "description", "element-library-id", "texture-library-id", "external-identifier",
 			"grid-cell-size", "grid-sub-cell-size");
 		return parent::buildForm($fields);
+	}
+	
+	public function toXml($name="project") {
+		return parent::toXml($name);
 	}
 }
 

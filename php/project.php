@@ -5,6 +5,13 @@ $pid = isset($_GET["pid"]) ? $_GET["pid"] : -1;
 $act = isset($_GET["act"]) ? $_GET["act"] : "show";
 
 $fp = new Floorplanner(API_URL, API_KEY);
+
+if ($act == "delete" && $pid > 0) {
+	$fp->deleteProject($pid);
+	header("Location: projects.php");
+	die("");
+}
+
 $project = $pid > 0 ? $fp->getProject($pid) : NULL;
 $token = "";
 if ($project) {
@@ -24,6 +31,7 @@ $form = "";
 				print "<a href=\"index.php\">home</a>";
 				print "<hr />";
 				$form = $project->buildForm();
+				$form .= "<pre>" . htmlentities($project->toXml()) . "</pre>";
 			} else if ($act == "new") {
 				print "<a href=\"project.php?act=save\">save project</a> | ";
 				print "<a href=\"projects.php\">cancel</a> | ";
@@ -31,6 +39,7 @@ $form = "";
 				print "<hr />";
 				$project = new FloorplannerProject(NULL);
 				$form = $project->buildForm();
+				
 			} else if ($act == "delete") {
 
 			}

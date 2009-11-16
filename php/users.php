@@ -19,7 +19,7 @@ $users = $fp->getUsers();
 		
 		<table>
 		<?php
-			if (count($users)) {
+			if ($users && count($users) > 0) {
 				foreach($users as $user) {
 					
 				}
