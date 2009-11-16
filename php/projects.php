@@ -14,7 +14,7 @@ $projects = $fp->getProjects();
 	</head>
 	<body>
 		<div>
-			<a href="#">create project</a> | <a href="index.php">home</a>
+			<a href="project.php?act=new">create project</a> | <a href="index.php">home</a>
 			<hr />
 		</div>
 		

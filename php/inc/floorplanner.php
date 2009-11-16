@@ -43,6 +43,7 @@ class Floorplanner {
 			
 			if ($payload) {
 				$out .= "Content-Length: " . strlen($payload) . "\r\n";
+				$out .= "Content-Type: application/xml\r\n";
 			}
 			
 			$out .= "Authorization: Basic $auth\r\n";
@@ -77,6 +78,13 @@ class Floorplanner {
 			}
 
 			return TRUE;
+		}
+	}
+	
+	public function createProject($project) {
+		$path = "/projects.xml";
+		$payload = $project->toXml();
+		if ($this->apiCall($path, "POST", $payload)) {
 		}
 	}
 	
@@ -173,9 +181,8 @@ class FloorplannerObject {
 		$this->data[$name] = $value;
 	}
 	
-	public function buildForm($fields=NULL) {
-		$html = "<form>";
-		$html .= "<table>";
+	public function buildForm($fields=NULL, $type="save") {
+		$html = "<table>";
 		
 		if ($fields) {
 			foreach($fields as $field) {
@@ -183,10 +190,11 @@ class FloorplannerObject {
 				$text = "<input type=\"text\" name=\"{$field}\" value=\"{$value}\"></input>";
 				$html .= "<tr><td>{$field}</td><td>{$text}</td></tr>";
 			}
+			$html .= "<tr><td colspan=\"2\"><input type=\"submit\" value=\"{$type}\"></input></td></tr>";
 		}
 		
 		$html .= "</table>";
-		$html .= "</form>";
+
 		return $html;
 	}
 	
