@@ -71,6 +71,16 @@ class Floorplanner {
 		}
 	}
 	
+	public function getProject($id) {
+		$path = "/projects/{$id}.xml";
+		if ($this->apiCall($path)) {
+			$xml = $this->responseXml;
+			return new FloorplannerProject($xml);
+		} else {
+			return NULL;
+		}
+	}
+	
 	public function getProjects($page = 1, $per_page = 100) {
 		$path = "/projects.xml?page=$page&per_page=$per_page";
 		$projects = array();
@@ -84,6 +94,16 @@ class Floorplanner {
 			}
 		}
 		return $projects;
+	}
+	
+	public function getUser($id) {
+		$path = "/users/{$id}.xml";
+		if ($this->apiCall($path)) {
+			$xml = $this->responseXml;
+			return new FloorplannerUser($xml);
+		} else {
+			return NULL;
+		}
 	}
 	
 	public function getUsers($page = 1, $per_page = 100) {
@@ -107,8 +127,10 @@ class FloorplannerObject {
 	
 	public function __construct($xml) {
 		$this->data = array();
-		foreach ($xml->children() as $child) {
-			$this->data[$child->getName()] = (string) $child;
+		if ($xml != NULL) {
+			foreach ($xml->children() as $child) {
+				$this->data[$child->getName()] = (string) $child;
+			}
 		}
 	}
 	
@@ -120,6 +142,24 @@ class FloorplannerObject {
 	public function __set($name, $value) {
 		$name = str_replace("-", "_", $name);
 		$this->data[$name] = $value;
+	}
+	
+	public function buildForm($fields=NULL) {
+		$html = "<form>";
+		$html .= "<table>";
+		
+		if ($fields) {
+			foreach($fields as $field) {
+				$key = str_replace("-", "_", $field);
+				$value = $this->data[$field];
+				$text = "<input type=\"text\" name=\"{$field}\" value=\"{$value}\"></input>";
+				$html .= "<tr><td>{$field}</td><td>{$text}</td></tr>";
+			}
+		}
+		
+		$html .= "</table>";
+		$html .= "</form>";
+		return $html;
 	}
 }
 
@@ -139,11 +179,22 @@ class FloorplannerProject extends FloorplannerObject  {
 	public function __construct($xml) {
 		parent::__construct($xml);
 	}
+	
+	public function buildForm($fields=NULL) {
+		$fields = array("name", "description", "element-library-id", "texture-library-id", "external-identifier",
+			"grid-cell-size", "grid-sub-cell-size");
+		return parent::buildForm($fields);
+	}
 }
 
 class FloorplannerUser extends FloorplannerObject {
 	public function __construct($xml) {
 		parent::__construct($xml);
+	}
+	
+	public function buildForm($fields=NULL) {
+		$fields = array("username", "email", "profile", "url", "account-type", "external-identifier");
+		return parent::buildForm($fields);
 	}
 }
 ?>
