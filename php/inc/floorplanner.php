@@ -156,6 +156,14 @@ class Floorplanner {
 		}
 		return $users;
 	}
+	
+	public function updateProject($project) {
+		$path = "/projects/{$project->id}.xml";
+		$payload = $project->toXml();
+		
+		if ($this->apiCall($path, "PUT", $payload)) {
+		}
+	}
 }
 
 class FloorplannerObject {
