@@ -18,6 +18,18 @@ support multiple languages, but for now only PHP is supported.
 Accessing the API using ActiveResource in Ruby on Rails is possible as well. We 
 plan to add some Rails examples as soon as possible.
 
+USAGE
+-------------------------------------------------------------------------------
+require "inc/floorplanner.php";
+
+$fp = new Floorplanner(API_URL, API_KEY);
+
+// fetch list of users
+$users = $fp->getUsers();
+foreach($users as $user) {
+	// IMPORTANT NOTE: hyphens in FML element-names are replaced by a underscore!
+	$externalIdentifier = $user->external_identifier;
+}
 
 LICENSE
 -------------------------------------------------------------------------------

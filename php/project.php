@@ -6,6 +6,10 @@ $act = isset($_GET["act"]) ? $_GET["act"] : "show";
 
 $fp = new Floorplanner(API_URL, API_KEY);
 $project = $pid > 0 ? $fp->getProject($pid) : NULL;
+$token = "";
+if ($project) {
+	$token = $fp->getToken($project->user_id);
+}
 $form = "";
 ?>
 <html>

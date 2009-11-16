@@ -86,7 +86,6 @@ class Floorplanner {
 		$projects = array();
 		if ($this->apiCall($path)) {
 			$xml = $this->responseXml;
-			
 			foreach($xml->children() as $child) {
 				if ($child->getName() == "project") {
 					$projects[] = new FloorplannerProject($child);
@@ -94,6 +93,17 @@ class Floorplanner {
 			}
 		}
 		return $projects;
+	}
+	
+	public function getToken($id) {
+		$path = "/users/{$id}/token.xml";
+		if ($this->apiCall($path)) {
+			$xml = $this->responseXml;
+			$user = new FloorplannerUser($xml);
+			return $user->current_token;
+		} else {
+			return NULL;
+		}
 	}
 	
 	public function getUser($id) {
@@ -140,7 +150,7 @@ class FloorplannerObject {
 	}
 	
 	public function __set($name, $value) {
-		$name = str_replace("-", "_", $name);
+		$name = str_replace("_", "-", $name);
 		$this->data[$name] = $value;
 	}
 	
@@ -150,7 +160,6 @@ class FloorplannerObject {
 		
 		if ($fields) {
 			foreach($fields as $field) {
-				$key = str_replace("-", "_", $field);
 				$value = $this->data[$field];
 				$text = "<input type=\"text\" name=\"{$field}\" value=\"{$value}\"></input>";
 				$html .= "<tr><td>{$field}</td><td>{$text}</td></tr>";
