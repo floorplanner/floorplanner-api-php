@@ -51,10 +51,7 @@ $form = "";
 			if ($act == "show") {
 				print "<a href=\"project.php?pid={$pid}&act=delete\">delete project</a> | ";
 				print "<a href=\"project.php?pid={$pid}&act=edit\">edit project</a> | ";
-				if ($project && $project->floors) {
-					$numFloors = count($project->floors);
-					print "<a href=\"floors.php?pid={$pid}\">floors (" .$numFloors . ")</a> | ";
-				}
+				
 				print "<a href=\"projects.php\">cancel</a> | ";
 				print "<a href=\"index.php\">home</a>";
 				print "<hr />";
@@ -79,10 +76,21 @@ $form = "";
 		</form>
 		
 		<?php
-			if ($project && $fp) {
-		//		print "<pre>";
-		//		print htmlentities($project->toXml());
-		//		print "</pre>";
+			if ($project && $project->floors) {
+				$numFloors = count($project->floors);
+				print "<ol>";
+				foreach($project->floors as $floor) {
+					print "<li>" . $floor->name . " " . count($floor->designs);
+					if ($floor->designs && count($floor->designs)) {
+						print "<ul>";
+						foreach ($floor->designs as $design) {
+							print "<li>" . $design->name . "</li>";
+						}
+						print "</ul>";
+					} 
+					print "</li>";
+				}
+				print "</ol>";
 			}
 		?>
 	</body>
