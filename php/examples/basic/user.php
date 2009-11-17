@@ -1,5 +1,5 @@
 <?php
-require "inc/floorplanner.php";
+require "../../inc/floorplanner.php";
 
 $uid = isset($_GET["uid"]) ? $_GET["uid"] : -1;
 $act = isset($_GET["act"]) ? $_GET["act"] : "show";

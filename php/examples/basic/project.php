@@ -1,5 +1,5 @@
 <?php
-require "inc/floorplanner.php";
+require "../../inc/floorplanner.php";
 
 $pid = isset($_GET["pid"]) ? $_GET["pid"] : -1;
 $act = isset($_GET["act"]) ? $_GET["act"] : "show";
@@ -52,18 +52,18 @@ $form = "";
 				print "<a href=\"project.php?pid={$pid}&act=delete\">delete project</a> | ";
 				print "<a href=\"project.php?pid={$pid}&act=edit\">edit project</a> | ";
 				
-				print "<a href=\"projects.php\">cancel</a> | ";
+				print "<a href=\"projects.php\">back</a> | ";
 				print "<a href=\"index.php\">home</a>";
 				print "<hr />";
 			} else if ($act == "new") {
-				print "<a href=\"projects.php\">cancel</a> | ";
+				print "<a href=\"projects.php\">back</a> | ";
 				print "<a href=\"index.php\">home</a>";
 				print "<hr />";
 				$project = new FloorplannerProject(NULL);
 				$form = $project->buildForm();
 				$form .= "<input type=\"hidden\" name=\"act\" value=\"save\"></input>";
 			} else if ($act == "edit") {
-				print "<a href=\"projects.php\">cancel</a> | ";
+				print "<a href=\"projects.php\">back</a> | ";
 				print "<a href=\"index.php\">home</a>";
 				print "<hr />";
 				$form = $project->buildForm();
@@ -80,11 +80,11 @@ $form = "";
 				$numFloors = count($project->floors);
 				print "<ol>";
 				foreach($project->floors as $floor) {
-					print "<li>" . $floor->name . " " . count($floor->designs);
+					print "<li>" . $floor->name;
 					if ($floor->designs && count($floor->designs)) {
 						print "<ul>";
 						foreach ($floor->designs as $design) {
-							print "<li>" . $design->name . "</li>";
+							print "<li><a href=\"design.php?id={$design->id}\">" . $design->name . "</a></li>";
 						}
 						print "</ul>";
 					} 

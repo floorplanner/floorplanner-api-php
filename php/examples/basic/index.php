@@ -1,5 +1,5 @@
 <?php
-require "inc/floorplanner.php";
+require "../../inc/floorplanner.php";
 ?>
 <html>
 	<head>
