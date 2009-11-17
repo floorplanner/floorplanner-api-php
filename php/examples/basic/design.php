@@ -33,8 +33,8 @@ $project = $fp->getProject($design["project-id"]);
 		</script>
 	</head>
 	<body onload="embedFloorplanner()">
-		<form>
+	
 		<div id="floorplannnerView"></div>
-		</form>
+		
 	</body>
 </html>

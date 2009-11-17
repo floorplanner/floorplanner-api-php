@@ -59,14 +59,14 @@ $form = "";
 				print "<a href=\"projects.php\">back</a> | ";
 				print "<a href=\"index.php\">home</a>";
 				print "<hr />";
-				$project = new FloorplannerProject(NULL);
-				$form = $project->buildForm();
+				$form = $fp->buildForm(array(), $fp->projectFields, false);
 				$form .= "<input type=\"hidden\" name=\"act\" value=\"save\"></input>";
+				$form .= "<input type=\"submit\" value=\"save\"></input>";
 			} else if ($act == "edit") {
 				print "<a href=\"projects.php\">back</a> | ";
 				print "<a href=\"index.php\">home</a>";
 				print "<hr />";
-				$form = $fp->buildForm($project);
+				$form = $fp->buildForm($project, $fp->projectFields);
 				$form .= "<input type=\"hidden\" name=\"act\" value=\"update\"></input>";
 				$form .= "<input type=\"hidden\" name=\"id\" value=\"{$project["id"]}\"></input>";
 				$form .= "<input type=\"submit\" value=\"save\"></input>";
@@ -84,7 +84,12 @@ $form = "";
 					if (count($floor["designs"])) {
 						print "<ul>";
 						foreach ($floor["designs"] as $design) {
-							print "<li><a href=\"design.php?id={$design["id"]}&token={$token}\">" . $design["name"] . "</a></li>";
+							$viewUrl = "design.php?id={$design["id"]}&token={$token}";
+							$editUrl = $viewUrl . "&edit=1";
+							print "<li>" . $design["name"] . " ";
+							print "<a href=\"{$viewUrl}\">view</a> | ";
+							print "<a href=\"{$editUrl}\">edit</a>";
+							print "</li>";
 						}
 						print "</ul>";
 					} 

@@ -13,17 +13,13 @@ define ("API_USER", "x");
 class Floorplanner {
 	
 	var $responseHeaders;
-	var $responseXml;
-	var $projects;
-	
+	var $projectFields;
+	var $userFields;
 	var $_host;
 	var $_port;
 	var $_timeout;
 	var $_api_key;
 	var $_api_user;
-	var $_parser_depth;
-	var $_current_object;
-	var $_current_name;
 	
 	/**
 	 *
@@ -35,7 +31,25 @@ class Floorplanner {
 		$this->_api_key = $api_key;
 		$this->_api_user = $api_user;
 		$this->_timeout = $timeout;
-		$this->projects = array();
+		
+		$this->projectFields = array(
+			"name" => array("", false),
+			"description" => array("", false),
+			"element-library-id" => array(1, false),
+			"texture-library-id" => array(1, false),
+			"public" => array("false", false),
+			"wall-thickness" => array(0.25, false),
+			"enable-autosave" => array("false", false),
+			"created-at" => array("", true),
+			"updated-at" => array("", true)
+			);
+			
+		$this->userFields = array(
+			"username" => array("", false),
+			"email" => array("", false),
+			"account-type" => array("", true),
+			"created-at" => array("", true)
+			);
 	}
 	
 	/**
@@ -104,14 +118,26 @@ class Floorplanner {
 	/**
 	 *
 	 */
-	function buildForm($array) {
+	function buildForm($array, $fields, $showReadOnly=true) {
 		$form = "<table>";
+		
+		foreach ($fields as $key=>$v) {
+			$val = $v[0];
+			$readonly = $v[1];
+			if (array_key_exists($key, $array)) {
+				$val = $array[$key];
+			}
+			if ($readonly) {
+				if ($showReadOnly) {
+					$form .= "<tr><td>{$key}</td><td>{$val}</td></tr>";
+				}
+			} else {	
+				$form .= "<tr><td>{$key}</td><td><input type=\"text\" name=\"{$key}\" value=\"{$val}\"></input></td></tr>";
+			} 
+		}
 		foreach ($array as $key=>$val) {
-			if (is_array($val) || $key == "id" || $key == "user-id") continue;
-			$form .= "<tr>";
-			$form .= "<td>{$key}</td>";
-			$form .= "<td><input type=\"text\" name=\"{$key}\" value=\"{$val}\"></input></td>";
-			$form .= "</tr>";
+			if (array_key_exists($key, $fields)) continue;
+			$form .= "<tr><td colspan=\"2\"><input type=\"hidden\" name=\"{$key}\" value=\"{$val}\"></input></td></tr>";
 		}
 		$form .= "</table>";
 		return $form;

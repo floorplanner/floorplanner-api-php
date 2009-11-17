@@ -11,21 +11,21 @@ if ($act == "delete" && $uid > 0) {
 	header("Location: users.php");
 	die("");
 } else if ($act == "save") {
-	$user = new FloorplannerUser(NULL);
+	$user = array();
 	foreach ($_GET as $key=>$val) {
 		if ($key == "act") continue;
-		$user->data[$key] = $val;
+		$user[$key] = $val;
 	}
 	$fp->createUser($user);
 	header("Location: users.php");
 	die("");	
 } else if ($act == "update") {
-	$user = new FloorplannerUser(NULL);
+	$user = array();
 	foreach ($_GET as $key=>$val) {
 		if ($key == "act") continue;
-		$user->data[$key] = $val;
+		$user[$key] = $val;
 	}
-	$fp->updateUsers($project);
+	$fp->updateUser($user);
 	header("Location: users.php");
 	die("");
 }
@@ -50,17 +50,17 @@ $form = "";
 				print "<a href=\"users.php\">back</a> | ";
 				print "<a href=\"index.php\">home</a>";
 				print "<hr />";
-				$form = $fp->buildForm($user);
+				$form = $fp->buildForm($user, $fp->userFields);
+				$form .= "<input type=\"hidden\" name=\"act\" value=\"update\"></input>";
+				$form .= "<input type=\"submit\" value=\"save\"></input>";
 			} else if ($act == "new") {
 				print "<a href=\"users.php\">back</a> | ";
 				print "<a href=\"index.php\">home</a>";
 				print "<hr />";
-				$user = new FloorplannerUser(NULL);
-				$form = $user->buildForm();
+				$form = $fp->buildForm(array(), $fp->userFields, false);
 				$form .= "<input type=\"hidden\" name=\"act\" value=\"save\"></input>";
-			} else if ($act == "delete") {
-
-			}
+				$form .= "<input type=\"submit\" value=\"save\"></input>";
+			} 
 		?>
 		<form action="user.php" method="get">
 		<?=$form;?>
