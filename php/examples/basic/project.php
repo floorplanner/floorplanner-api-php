@@ -33,7 +33,7 @@ if ($act == "delete" && $pid > 0) {
 $project = $pid > 0 ? $fp->getProject($pid) : NULL;
 $token = "";
 if ($project) {
-//	$token = $fp->getToken($project->user_id);
+	$token = $fp->getToken($project["user-id"]);
 }
 $form = "";
 ?>
@@ -84,7 +84,7 @@ $form = "";
 					if (count($floor["designs"])) {
 						print "<ul>";
 						foreach ($floor["designs"] as $design) {
-							print "<li><a href=\"design.php?id={$design["id"]}\">" . $design["name"] . "</a></li>";
+							print "<li><a href=\"design.php?id={$design["id"]}&token={$token}\">" . $design["name"] . "</a></li>";
 						}
 						print "</ul>";
 					} 

@@ -107,7 +107,7 @@ class Floorplanner {
 	function buildForm($array) {
 		$form = "<table>";
 		foreach ($array as $key=>$val) {
-			if (is_array($val)) continue;
+			if (is_array($val) || $key == "id" || $key == "user-id") continue;
 			$form .= "<tr>";
 			$form .= "<td>{$key}</td>";
 			$form .= "<td><input type=\"text\" name=\"{$key}\" value=\"{$val}\"></input></td>";
@@ -124,7 +124,7 @@ class Floorplanner {
 		$xml = "<" . $nodeName . ">";
 		foreach ($array as $key=>$val) {
 			if (is_array($val)) {
-				$xml .= toXml($val, $key);
+				$xml .= $this->toXml($val, $key);
 			} else {
 				$xml .= "<" . $key . ">";
 				$xml .= trim($val);
@@ -140,7 +140,7 @@ class Floorplanner {
 	 */
 	function createProject($project) {
 		$path = "/projects.xml";
-		$payload = toXml($project, "project");
+		$payload = $this->toXml($project, "project");
 		if ($this->apiCall($path, "POST", $payload)) {
 		}
 	}
@@ -150,7 +150,7 @@ class Floorplanner {
 	 */
 	function createUser($user) {
 		$path = "/users.xml";
-		$payload = toXml($user, "user");
+		$payload = $this->toXml($user, "user");
 		if ($this->apiCall($path, "POST", $payload)) {
 		}
 	}
@@ -172,6 +172,19 @@ class Floorplanner {
 		$path = "/users/{$id}.xml";
 		$payload = $this->toXml(array("id"=>$id), "user");
 		if ($this->apiCall($path, "DELETE", $payload)) {
+		}
+	}
+	
+	/**
+	 *
+	 */
+	function getDesign($id) {
+		$path = "/designs/{$id}.xml";
+		$result = $this->apiCall($path);
+		if ($result && array_key_exists("designs", $result)) {
+			return $result["designs"][0];
+		} else {
+			return NULL;
 		}
 	}
 	
@@ -207,7 +220,7 @@ class Floorplanner {
 	function getToken($id) {
 		$path = "/users/{$id}/token.xml";
 		$result = $this->apiCall($path);
-		if ($result && array_key_exists("users", $result)) {
+		if ($result && array_key_exists("users", $result) && count($result["users"]) > 0) {
 			$user = $result["users"][0];
 			return $user["current-token"];
 		} else {
@@ -262,6 +275,9 @@ class Floorplanner {
 	}
 }
 
+/**
+ * Simple XML parser.
+ */
 class SimpleParser {
 	var $projects;
 	var $users;
