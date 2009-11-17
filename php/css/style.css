@@ -1,0 +1,19 @@
+/**
+ *
+ */
+
+html, body {
+	font-family: "HelveticaNeue-Light",Helvetica,Arial,FreeSans,sans-serif;
+	font-size:10pt;
+}
+
+td {
+	font-size: 10pt;
+	font-weight: bold;
+	padding-right: 10px;
+}
+
+a {
+	font-size: 11pt;
+	font-weight: normal;
+}
