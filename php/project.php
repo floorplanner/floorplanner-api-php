@@ -40,12 +40,21 @@ $form = "";
 <html>
 	<head>
 		<title>Floorplanner API - Project</title>
+		<link href="css/style.css" media="screen" rel="stylesheet" type="text/css" />
 	</head>
 	<body>
 		<?php
+			if ($project) {
+				print "<h3>project \"" . $project->name . "\"</h3>"; 
+			}
+			
 			if ($act == "show") {
 				print "<a href=\"project.php?pid={$pid}&act=delete\">delete project</a> | ";
 				print "<a href=\"project.php?pid={$pid}&act=edit\">edit project</a> | ";
+				if ($project && $project->floors) {
+					$numFloors = count($project->floors);
+					print "<a href=\"floors.php?pid={$pid}\">floors (" .$numFloors . ")</a> | ";
+				}
 				print "<a href=\"projects.php\">cancel</a> | ";
 				print "<a href=\"index.php\">home</a>";
 				print "<hr />";
@@ -68,5 +77,13 @@ $form = "";
 		<form action="project.php" method="get">
 		<?=$form;?>
 		</form>
+		
+		<?php
+			if ($project && $fp) {
+		//		print "<pre>";
+		//		print htmlentities($project->toXml());
+		//		print "</pre>";
+			}
+		?>
 	</body>
 </html>

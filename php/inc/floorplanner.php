@@ -1,8 +1,14 @@
 <?php
+/**
+ *
+ */
 define ("API_URL", "http://www.floorplanner.com/");
 define ("API_KEY", "43d9290d0301000e9d689192c14f3df4719cc501");
 define ("API_USER", "x");
 
+/**
+ *
+ */
 class Floorplanner {
 	
 	public $responseHeaders;
@@ -14,6 +20,9 @@ class Floorplanner {
 	private $_api_key;
 	private $_api_user;
 	
+	/**
+	 *
+	 */
 	public function __construct($api_url, $api_key, $api_user="x", $port=80, $timeout=30) {
 		$uri = parse_url($api_url);
 		$this->_host = $uri["host"];
@@ -68,6 +77,10 @@ class Floorplanner {
 			$rawHeaders = trim($parts[0]);
 			$this->responseXml = simplexml_load_string(trim($parts[1]));
 			
+		//	print "<pre>";
+		//	print_r($this->responseXml->floors);
+		//	print "</pre>";
+			
 			// parse response headers
 			$headers = explode("\r\n", $rawHeaders);
 			foreach($headers as $value) {
@@ -81,6 +94,9 @@ class Floorplanner {
 		}
 	}
 	
+	/**
+	 *
+	 */
 	public function createProject($project) {
 		$path = "/projects.xml";
 		$payload = $project->toXml();
@@ -88,16 +104,43 @@ class Floorplanner {
 		}
 	}
 	
+	/**
+	 *
+	 */
+	public function createUser($user) {
+		$path = "/users.xml";
+		$payload = $user->toXml();
+		if ($this->apiCall($path, "POST", $payload)) {
+		}
+	}
+	
+	/**
+	 *
+	 */
 	public function deleteProject($id) {
 		$path = "/projects/{$id}.xml";
 		$project = new FloorplannerProject(NULL);
 		$project->id = $id;
 		$payload = $project->toXml();
-		
 		if ($this->apiCall($path, "DELETE", $payload)) {
 		}
 	}
 	
+	/**
+	 *
+	 */
+	public function deleteUser($id) {
+		$path = "/users/{$id}.xml";
+		$user = new FloorplannerUser(NULL);
+		$user->id = $id;
+		$payload = $user->toXml();
+		if ($this->apiCall($path, "DELETE", $payload)) {
+		}
+	}
+	
+	/**
+	 *
+	 */
 	public function getProject($id) {
 		$path = "/projects/{$id}.xml";
 		if ($this->apiCall($path)) {
@@ -108,6 +151,9 @@ class Floorplanner {
 		}
 	}
 	
+	/**
+	 *
+	 */
 	public function getProjects($page = 1, $per_page = 100) {
 		$path = "/projects.xml?page=$page&per_page=$per_page";
 		$projects = array();
@@ -122,6 +168,9 @@ class Floorplanner {
 		return $projects;
 	}
 	
+	/**
+	 *
+	 */
 	public function getToken($id) {
 		$path = "/users/{$id}/token.xml";
 		if ($this->apiCall($path)) {
@@ -133,6 +182,9 @@ class Floorplanner {
 		}
 	}
 	
+	/**
+	 *
+	 */
 	public function getUser($id) {
 		$path = "/users/{$id}.xml";
 		if ($this->apiCall($path)) {
@@ -143,6 +195,9 @@ class Floorplanner {
 		}
 	}
 	
+	/**
+	 *
+	 */
 	public function getUsers($page = 1, $per_page = 100) {
 		$path = "/users.xml?page=$page&per_page=$per_page";
 		$users = array();
@@ -157,17 +212,29 @@ class Floorplanner {
 		return $users;
 	}
 	
+	/**
+	 *
+	 */
 	public function updateProject($project) {
 		$path = "/projects/{$project->id}.xml";
 		$payload = $project->toXml();
-		
+		if ($this->apiCall($path, "PUT", $payload)) {
+		}
+	}
+	
+	/**
+	 *
+	 */
+	public function updateUser($user) {
+		$path = "/users/{$user->id}.xml";
+		$payload = $user->toXml();
 		if ($this->apiCall($path, "PUT", $payload)) {
 		}
 	}
 }
 
 class FloorplannerObject {
-
+	
 	public $data;
 	
 	public function __construct($xml) {
@@ -206,33 +273,77 @@ class FloorplannerObject {
 		return $html;
 	}
 	
-	public function toXml($name="user") {
-		$xml = "<$name>";
+	public function toXml($name="user", $children=array(), $indent="") {
+		$xml = "$indent<$name>\n";
 		foreach($this->data as $key=>$val) {
-			$xml .= "<$key>";
-			$xml .= $val;
-			$xml .= "</$key>";
+			$xml .= "$indent\t<$key>";
+			if (array_key_exists($key, $children)) {
+				$xml .= "\n$indent\t";
+				foreach($children[$key] as $child) {
+					$xml .= $child->toXml(NULL, array(), $indent . "\t");
+				}
+			} else {
+				$xml .= $val;
+			}
+			$xml .= "</$key>\n";
 		}
-		$xml .= "</$name>";
+		$xml .= "$indent</$name>\n";
 		return $xml;
 	}
 }
 
+/**
+ *
+ */
 class FloorplannerDesign extends FloorplannerObject  {
 	public function __construct($xml) {
 		parent::__construct($xml);
 	}
-}
-
-class FloorplannerFloor extends FloorplannerObject  {
-	public function __construct($xml) {
-		parent::__construct($xml);
+	
+	public function toXml($name="design", $children=array(), $indent="") {
+		return parent::toXml("design", $children, $indent);
 	}
 }
 
-class FloorplannerProject extends FloorplannerObject  {
+/**
+ *
+ */
+class FloorplannerFloor extends FloorplannerObject  {
+	public $designs;
+	
 	public function __construct($xml) {
 		parent::__construct($xml);
+		$this->designs = array();
+		$designs = $xml->designs;
+		if ($designs && count($designs->children())) {
+			foreach ($designs->children() as $design) {
+				$this->designs[] = new FloorplannerDesign($design);
+			}
+		}
+	}
+	
+	public function toXml($name="floor", $children=array(), $indent="") {
+		return parent::toXml("floor", array("designs" => $this->designs));
+	}
+}
+
+/**
+ *
+ */
+class FloorplannerProject extends FloorplannerObject  {
+	public $floors;
+	
+	public function __construct($xml) {
+		parent::__construct($xml);
+		
+		$this->floors = array();
+		
+		$floors = $xml->floors;
+		if ($floors && count($floors)) {
+			foreach ($floors->children() as $floor) {
+				$this->floors[] = new FloorplannerFloor($floor);
+			}
+		}
 	}
 	
 	public function buildForm($fields=NULL) {
@@ -241,11 +352,14 @@ class FloorplannerProject extends FloorplannerObject  {
 		return parent::buildForm($fields);
 	}
 	
-	public function toXml($name="project") {
-		return parent::toXml($name);
+	public function toXml($name="project", $children=array(), $indent="") {
+		return parent::toXml("project", array("floors" => $this->floors), $indent);
 	}
 }
 
+/**
+ *
+ */
 class FloorplannerUser extends FloorplannerObject {
 	public function __construct($xml) {
 		parent::__construct($xml);
@@ -254,6 +368,10 @@ class FloorplannerUser extends FloorplannerObject {
 	public function buildForm($fields=NULL) {
 		$fields = array("username", "email", "profile", "url", "account-type", "external-identifier");
 		return parent::buildForm($fields);
+	}
+	
+	public function toXml($name="user", $children=array(), $indent="") {
+		return parent::toXml($name, $children, $indent);
 	}
 }
 ?>
