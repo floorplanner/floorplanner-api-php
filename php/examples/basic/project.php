@@ -11,19 +11,19 @@ if ($act == "delete" && $pid > 0) {
 	header("Location: projects.php");
 	die("");
 } else if ($act == "save") {
-	$project = new FloorplannerProject(NULL);
+	$project = array();
 	foreach ($_GET as $key=>$val) {
 		if ($key == "act") continue;
-		$project->data[$key] = $val;
+		$project[$key] = $val;
 	}
 	$fp->createProject($project);
 	header("Location: projects.php");
 	die("");
 } else if ($act == "update") {
-	$project = new FloorplannerProject(NULL);
+	$project = array();
 	foreach ($_GET as $key=>$val) {
 		if ($key == "act") continue;
-		$project->data[$key] = $val;
+		$project[$key] = $val;
 	}
 	$fp->updateProject($project);
 	header("Location: projects.php");
@@ -69,6 +69,7 @@ $form = "";
 				$form = $fp->buildForm($project);
 				$form .= "<input type=\"hidden\" name=\"act\" value=\"update\"></input>";
 				$form .= "<input type=\"hidden\" name=\"id\" value=\"{$project["id"]}\"></input>";
+				$form .= "<input type=\"submit\" value=\"save\"></input>";
 			}
 		?>
 		<form action="project.php" method="get">

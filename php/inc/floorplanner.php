@@ -46,10 +46,11 @@ class Floorplanner {
 		
 		$this->responseHeaders = array();
 		$this->responseXml = NULL;
+		$result = NULL;
 		
 		if (!$fp) {
 		    echo "$errstr ($errno)<br />\n";
-			return NULL;
+			return $result;
 		} else {
 		    $auth = base64_encode($this->_api_key . ":" . $this->_api_user);
 		
@@ -81,9 +82,11 @@ class Floorplanner {
 			$rawHeaders = trim($parts[0]);
 			$rawXml = trim($parts[1]);
 			
-			$p = new SimpleParser();
-			$result = $p->parse($rawXml);
-//			die("<pre>".var_export($result, 1)."</pre>");
+			if ($method == "GET") {
+				$p = new SimpleParser();
+				$result = $p->parse($rawXml);
+				//die("<pre>".var_export($result, 1)."</pre>");
+			}
 			
 			// parse response headers
 			$headers = explode("\r\n", $rawHeaders);
@@ -117,9 +120,27 @@ class Floorplanner {
 	/**
 	 *
 	 */
+	function toXml($array, $nodeName) {
+		$xml = "<" . $nodeName . ">";
+		foreach ($array as $key=>$val) {
+			if (is_array($val)) {
+				$xml .= toXml($val, $key);
+			} else {
+				$xml .= "<" . $key . ">";
+				$xml .= trim($val);
+				$xml .= "</" . $key . ">";
+			}
+		}
+		$xml .= "</" . $nodeName . ">";
+		return $xml;
+	}
+	
+	/**
+	 *
+	 */
 	function createProject($project) {
 		$path = "/projects.xml";
-		$payload = $project->toXml();
+		$payload = toXml($project, "project");
 		if ($this->apiCall($path, "POST", $payload)) {
 		}
 	}
@@ -129,7 +150,7 @@ class Floorplanner {
 	 */
 	function createUser($user) {
 		$path = "/users.xml";
-		$payload = $user->toXml();
+		$payload = toXml($user, "user");
 		if ($this->apiCall($path, "POST", $payload)) {
 		}
 	}
@@ -139,9 +160,7 @@ class Floorplanner {
 	 */
 	function deleteProject($id) {
 		$path = "/projects/{$id}.xml";
-		$project = new FloorplannerProject(NULL);
-		$project->id = $id;
-		$payload = $project->toXml();
+		$payload = $this->toXml(array("id"=>$id), "project");
 		if ($this->apiCall($path, "DELETE", $payload)) {
 		}
 	}
@@ -151,9 +170,7 @@ class Floorplanner {
 	 */
 	function deleteUser($id) {
 		$path = "/users/{$id}.xml";
-		$user = new FloorplannerUser(NULL);
-		$user->id = $id;
-		$payload = $user->toXml();
+		$payload = $this->toXml(array("id"=>$id), "user");
 		if ($this->apiCall($path, "DELETE", $payload)) {
 		}
 	}
@@ -189,10 +206,10 @@ class Floorplanner {
 	 */
 	function getToken($id) {
 		$path = "/users/{$id}/token.xml";
-		if ($this->apiCall($path)) {
-			$xml = $this->responseXml;
-			$user = new FloorplannerUser($xml);
-			return $user->current_token;
+		$result = $this->apiCall($path);
+		if ($result && array_key_exists("users", $result)) {
+			$user = $result["users"][0];
+			return $user["current-token"];
 		} else {
 			return NULL;
 		}
@@ -228,8 +245,8 @@ class Floorplanner {
 	 *
 	 */
 	function updateProject($project) {
-		$path = "/projects/{$project->id}.xml";
-		$payload = $project->toXml();
+		$path = "/projects/{$project['id']}.xml";
+		$payload = $this->toXml($project, "project");
 		if ($this->apiCall($path, "PUT", $payload)) {
 		}
 	}
@@ -238,8 +255,8 @@ class Floorplanner {
 	 *
 	 */
 	function updateUser($user) {
-		$path = "/users/{$user->id}.xml";
-		$payload = $user->toXml();
+		$path = "/users/{$user['id']}.xml";
+		$payload = $this->toXml($user, "user");
 		if ($this->apiCall($path, "PUT", $payload)) {
 		}
 	}
@@ -272,7 +289,7 @@ class SimpleParser {
 		if (!xml_parse($xml_parser, $xml, true)) {
 			die(sprintf("XML error: %s at line %d", 
 				xml_error_string(xml_get_error_code($xml_parser)),
-				xml_get_current_line_number($xml_parser)));
+				xml_get_current_line_number($xml_parser)) . "\n" . $xml);
 		}
 		xml_parser_free($xml_parser);
 		return $this->result;
