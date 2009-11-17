@@ -33,7 +33,7 @@ if ($act == "delete" && $pid > 0) {
 $project = $pid > 0 ? $fp->getProject($pid) : NULL;
 $token = "";
 if ($project) {
-	$token = $fp->getToken($project->user_id);
+//	$token = $fp->getToken($project->user_id);
 }
 $form = "";
 ?>
@@ -45,7 +45,7 @@ $form = "";
 	<body>
 		<?php
 			if ($project) {
-				print "<h3>project \"" . $project->name . "\"</h3>"; 
+				print "<h3>project \"" . $project["name"] . "\"</h3>"; 
 			}
 			
 			if ($act == "show") {
@@ -66,9 +66,9 @@ $form = "";
 				print "<a href=\"projects.php\">back</a> | ";
 				print "<a href=\"index.php\">home</a>";
 				print "<hr />";
-				$form = $project->buildForm();
+				$form = $fp->buildForm($project);
 				$form .= "<input type=\"hidden\" name=\"act\" value=\"update\"></input>";
-				$form .= "<input type=\"hidden\" name=\"id\" value=\"{$project->id}\"></input>";
+				$form .= "<input type=\"hidden\" name=\"id\" value=\"{$project["id"]}\"></input>";
 			}
 		?>
 		<form action="project.php" method="get">
@@ -76,15 +76,14 @@ $form = "";
 		</form>
 		
 		<?php
-			if ($project && $project->floors) {
-				$numFloors = count($project->floors);
+			if ($project && array_key_exists("floors", $project)) {
 				print "<ol>";
-				foreach($project->floors as $floor) {
-					print "<li>" . $floor->name;
-					if ($floor->designs && count($floor->designs)) {
+				foreach($project["floors"] as $floor) {
+					print "<li>" . $floor["name"];
+					if (count($floor["designs"])) {
 						print "<ul>";
-						foreach ($floor->designs as $design) {
-							print "<li><a href=\"design.php?id={$design->id}\">" . $design->name . "</a></li>";
+						foreach ($floor["designs"] as $design) {
+							print "<li><a href=\"design.php?id={$design["id"]}\">" . $design["name"] . "</a></li>";
 						}
 						print "</ul>";
 					} 

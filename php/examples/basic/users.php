@@ -23,7 +23,7 @@ $users = $fp->getUsers();
 		<?php
 			if ($users && count($users) > 0) {
 				foreach($users as $user) {
-					print "<tr><td><a href=\"user.php?uid={$user->id}\">" . $user->username . "</td></tr>";
+					print "<tr><td><a href=\"user.php?uid={$user["id"]}\">" . $user["username"] . "</td></tr>";
 				}
 			} else {
 				print "<tr><td>No users found.</td></tr>";

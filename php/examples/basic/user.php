@@ -41,7 +41,7 @@ $form = "";
 	<body>
 		<?php
 			if ($user) {
-				print "<h3>user \"" . $user->username . "\"</h3>"; 
+				print "<h3>user \"" . $user["username"] . "\"</h3>"; 
 			}
 			
 			if ($act == "show") {
@@ -50,7 +50,7 @@ $form = "";
 				print "<a href=\"users.php\">back</a> | ";
 				print "<a href=\"index.php\">home</a>";
 				print "<hr />";
-				$form = $user->buildForm();
+				$form = $fp->buildForm($user);
 			} else if ($act == "new") {
 				print "<a href=\"users.php\">back</a> | ";
 				print "<a href=\"index.php\">home</a>";
