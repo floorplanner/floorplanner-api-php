@@ -20,15 +20,22 @@ plan to add some Rails examples as soon as possible.
 
 USAGE
 -------------------------------------------------------------------------------
+// include the Floorplanner class.
 require "inc/floorplanner.php";
 
 $fp = new Floorplanner(API_URL, API_KEY);
 
-// fetch list of users
+// fetch associative array of users
 $users = $fp->getUsers();
 foreach($users as $user) {
-	// IMPORTANT NOTE: hyphens in FML element-names are replaced by a underscore!
-	$externalIdentifier = $user->external_identifier;
+	$username = $user["username"];
+	$externalIdentifier = $user["external-identifier"];
+}
+
+// fetch associative array of projects
+$projects = $fp->getProjects();
+foreach ($projects as $project) {
+	$name = $project["name"];
 }
 
 LICENSE
