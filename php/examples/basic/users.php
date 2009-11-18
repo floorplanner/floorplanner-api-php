@@ -3,10 +3,13 @@ require "../../inc/floorplanner.php";
 
 $fp = new Floorplanner(API_URL, API_KEY);
 
+$debug = isset($_GET["debug"]) ? $_GET["debug"] : 0;
+
 $page = 1;
 $per_page = 100;
 
 $users = $fp->getUsers();
+
 ?>
 <html>
 	<head>
@@ -23,12 +26,22 @@ $users = $fp->getUsers();
 		<?php
 			if ($users && count($users) > 0) {
 				foreach($users as $user) {
-					print "<tr><td><a href=\"user.php?id={$user["id"]}\">" . $user["username"] . "</td></tr>";
+					$name = $user["username"];
+					$name = strlen($name) ? $name : "No Username?!";
+					print "<tr><td><a href=\"user.php?id={$user["id"]}\">{$name}</td></tr>";
 				}
 			} else {
-				print "<tr><td>No users found.</td></tr>";
+				print "<div style=\"color:red\">No users found.</div>";
 			}
 		?>
 		</table>
+		<?php
+			if ($debug) {
+				print "<pre>" . var_export($users, 1);
+				print "\nresponse headers:\n\n";
+				var_export($fp->responseHeaders);
+				print "</pre>";
+			}
+		?>
 	</body>
 </html>
