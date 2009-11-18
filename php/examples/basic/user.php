@@ -1,13 +1,14 @@
 <?php
 require "../../inc/floorplanner.php";
 
-$uid = isset($_GET["uid"]) ? $_GET["uid"] : -1;
+$id = isset($_GET["id"]) ? $_GET["id"] : -1;
 $act = isset($_GET["act"]) ? $_GET["act"] : "show";
 
 $fp = new Floorplanner(API_URL, API_KEY);
 
-if ($act == "delete" && $uid > 0) {
-	$fp->deleteUser($uid);
+if ($act == "delete" && $id > 0) {
+	$user = $fp->getUser($id);
+	$fp->deleteUser($user);
 	header("Location: users.php");
 	die("");
 } else if ($act == "save") {
@@ -30,7 +31,7 @@ if ($act == "delete" && $uid > 0) {
 	die("");
 }
 
-$user = $uid > 0 ? $fp->getUser($uid) : NULL;
+$user = $id > 0 ? $fp->getUser($id) : NULL;
 $form = "";
 ?>
 <html>
@@ -46,7 +47,7 @@ $form = "";
 			
 			if ($act == "show") {
 				print "<a href=\"user.php?act=new\">create user</a> | ";
-				print "<a href=\"user.php?uid={$uid}&act=delete\">delete user</a> | ";
+				print "<a href=\"user.php?id={$id}&act=delete\">delete user</a> | ";
 				print "<a href=\"users.php\">back</a> | ";
 				print "<a href=\"index.php\">home</a>";
 				print "<hr />";

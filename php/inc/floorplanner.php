@@ -194,9 +194,9 @@ class Floorplanner {
 	/**
 	 *
 	 */
-	function deleteUser($id) {
-		$path = "/users/{$id}.xml";
-		$payload = $this->toXml(array("id"=>$id), "user");
+	function deleteUser($user) {
+		$path = "/users/{$user['id']}.xml";
+		$payload = $this->toXml($user, "user");
 		if ($this->apiCall($path, "DELETE", $payload)) {
 		}
 	}

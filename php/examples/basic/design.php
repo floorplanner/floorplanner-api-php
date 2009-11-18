@@ -19,11 +19,12 @@ $project = $fp->getProject($design["project-id"]);
 		<script type="text/javascript" src="<?=API_URL;?>javascripts/floorplanner/floorplanner.js"> </script>
 		<script type="text/javascript">
 			var token = "<?=$token;?>";
+			var designId = <?=$id;?>;
 			var projectId = <?=$project["id"];?>;
 			var editMode = <?=$edit;?>;
 			
 			function embedFloorplanner() {
-				var fpParams = {project_id:projectId, token:token};
+				var fpParams = {project_id:projectId, design_id:designId, token:token};
 				if (editMode > 0) {
 					fpParams.state = "edit";
 				}
