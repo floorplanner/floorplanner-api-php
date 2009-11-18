@@ -1,13 +1,13 @@
 <?php
 require "../../inc/floorplanner.php";
 
-$pid = isset($_GET["pid"]) ? $_GET["pid"] : -1;
+$id = isset($_GET["id"]) ? $_GET["id"] : -1;
 $act = isset($_GET["act"]) ? $_GET["act"] : "show";
 
 $fp = new Floorplanner(API_URL, API_KEY);
 
-if ($act == "delete" && $pid > 0) {
-	$fp->deleteProject($pid);
+if ($act == "delete" && $id > 0) {
+	$fp->deleteProject($id);
 	header("Location: projects.php");
 	die("");
 } else if ($act == "save") {
@@ -30,7 +30,7 @@ if ($act == "delete" && $pid > 0) {
 	die("");
 }
 
-$project = $pid > 0 ? $fp->getProject($pid) : NULL;
+$project = $id > 0 ? $fp->getProject($id) : NULL;
 $token = "";
 if ($project) {
 	$token = $fp->getToken($project["user-id"]);
@@ -49,8 +49,8 @@ $form = "";
 			}
 			
 			if ($act == "show") {
-				print "<a href=\"project.php?pid={$pid}&act=delete\">delete project</a> | ";
-				print "<a href=\"project.php?pid={$pid}&act=edit\">edit project</a> | ";
+				print "<a href=\"project.php?id={$id}&act=delete\">delete project</a> | ";
+				print "<a href=\"project.php?id={$id}&act=edit\">edit project</a> | ";
 				
 				print "<a href=\"projects.php\">back</a> | ";
 				print "<a href=\"index.php\">home</a>";

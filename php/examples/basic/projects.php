@@ -23,7 +23,7 @@ $projects = $fp->getProjects();
 		<?php
 			if ($projects && count($projects)) {
 				foreach($projects as $project) {
-					print "<tr><td><a href=\"project.php?pid={$project['id']}\">" . $project["name"] . "</td></tr>";
+					print "<tr><td><a href=\"project.php?id={$project['id']}\">" . $project["name"] . "</td></tr>";
 				}
 			} else {
 				print "<tr><td>No projects found.</td></tr>";
