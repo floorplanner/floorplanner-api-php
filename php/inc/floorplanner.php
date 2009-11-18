@@ -127,9 +127,9 @@ class Floorplanner {
 				//die("<pre>".var_export($result, 1)."</pre>");
 			}
 			
-			$status = (int) $this->responseHeaders["Status"];
+			$status = $this->responseHeaders["Status"];
 			
-			if ($status != 200) {
+			if ($status == 500) {
 				die("<pre>$endpoint\n" .
 				 	htmlentities($payload) . "\n" .
 					var_export($this->responseHeaders , 1). "\n" . 
