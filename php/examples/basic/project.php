@@ -36,6 +36,8 @@ if ($project) {
 	$token = $fp->getToken($project["user-id"]);
 }
 $form = "";
+
+//die("<pre>" . var_export($project, 1) . "</pre>");
 ?>
 <html>
 	<head>
@@ -92,7 +94,12 @@ $form = "";
 							print "</li>";
 						}
 						print "</ul>";
-					} 
+					} else {
+						$viewUrl = "design.php?project_id={$id}&floor_id={$floor['id']}&token={$token}";
+						$editUrl = $viewUrl . "&edit=1";
+						print " | <a href=\"{$viewUrl}\">view</a> | ";
+						print "<a href=\"{$editUrl}\">edit</a>";
+					}
 					print "</li>";
 				}
 				print "</ol>";

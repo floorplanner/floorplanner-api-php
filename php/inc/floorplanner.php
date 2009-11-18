@@ -198,9 +198,24 @@ class Floorplanner {
 	/**
 	 *
 	 */
+	function createDesign($design) {
+		$endpoint = "/designs.xml";
+		$payload = $this->toXml($design, "design");
+		if ($this->apiCall($endpoint, "POST", $payload)) {
+		}
+	}
+	
+	/**
+	 *
+	 */
 	function createProject($project) {
 		$endpoint = "/projects.xml";
+		
+		$project["floors-count"] = 2;
+			
 		$payload = $this->toXml($project, "project");
+		
+	//	die("<pre>" . htmlentities($payload) . "</pre>");
 		if ($this->apiCall($endpoint, "POST", $payload)) {
 		}
 	}
@@ -228,9 +243,9 @@ class Floorplanner {
 	/**
 	 *
 	 */
-	function deleteUser($user) {
-		$endpoint = "/users/{$user['id']}.xml";
-		$payload = $this->toXml($user, "user");
+	function deleteUser($id) {
+		$endpoint = "/users/{$id}.xml";
+		$payload = $this->toXml(array("id"=>$id), "user");
 		if ($this->apiCall($endpoint, "DELETE", $payload)) {
 		}
 	}
@@ -349,9 +364,15 @@ class SimpleParser {
 	var $currentFloor;
 	var $currentDesign;
 	var $currentUser;
+	var $currentAsset;
+	var $currentLine;
+	var $currentArea;
 	var $currentObject;
+	var $status;
 	var $currentName;
 	var $parserDepth;
+	var $currentAttrs;
+	var $currentAssetId;
 	
 	function SimpleParser() {
 	}
@@ -373,20 +394,75 @@ class SimpleParser {
 	
 	function startElement($parser, $name, $attrs) {
 	    $this->parserDepth[$parser]++;
+	//	$this->currentLine = $this->currentObject = $this->currentArea = $this->currentAsset = NULL;
+		
+
 		switch($name) {
+			case "OBJECTS":
+				if ($this->currentDesign) {
+					$this->currentDesign["objects"] = array();
+				}
+				break;
+			case "OBJECT":
+				$this->currentObject = array();
+				$this->status = "OBJECT";
+				break;
+			case "LINES":
+				if ($this->currentDesign) {
+					$this->currentDesign["lines"] = array();
+				}
+				break;
+			case "LINE":
+				$this->currentLine = array();
+				$this->status = "LINE";
+				break;
+			case "AREAS":
+				if ($this->currentDesign) {
+					$this->currentDesign["areas"] = array();
+				}
+				break;
+			case "AREA":
+				$this->currentArea = array();
+				$this->status = "AREA";
+				break;
+			case "ASSETS":
+				if ($this->currentDesign) {
+					$this->currentDesign["assets"] = array();
+				}
+				break;
+			case "ASSET":
+				if ($attrs && array_key_exists("REFID", $attrs)) {
+					switch ($this->status) {
+						case "AREA":
+							$this->currentArea["asset"] = $attrs["REFID"];
+							break;
+						case "OBJECT":
+							$this->currentObject["asset"] = $attrs["REFID"];
+							break;
+						case "LINE":
+							$this->currentLine["asset"] = $attrs["REFID"];
+						default:
+							break;
+					}
+				} else {
+					$this->currentAsset = array();
+					$this->status = "ASSET";
+					$this->currentAssetId = $attrs["ID"];
+				}
+				break;
 			case "USERS":
 				$this->result["users"] = array();
 				break;
 			case "USER":
 				$this->currentUser = array();
-				$this->currentObject = "USER";
+				$this->status = "USER";
 				break;
 			case "PROJECTS":
 				$this->result["projects"] = array();
 				break;
 			case "PROJECT":
 				$this->currentProject = array();
-				$this->currentObject = "PROJECT";
+				$this->status = "PROJECT";
 				break;
 			case "FLOORS":
 				if ($this->currentProject) {
@@ -397,7 +473,7 @@ class SimpleParser {
 				break;
 			case "FLOOR":
 				$this->currentFloor = array();
-				$this->currentObject = "FLOOR";
+				$this->status = "FLOOR";
 				break;
 			case "DESIGNS":
 				if ($this->currentFloor) {
@@ -406,7 +482,7 @@ class SimpleParser {
 				break;
 			case "DESIGN":
 				$this->currentDesign = array();
-				$this->currentObject = "DESIGN";
+				$this->status = "DESIGN";
 				break;
 			default:
 				$this->currentName = strtolower($name);
@@ -414,9 +490,64 @@ class SimpleParser {
 		}
 	}
 
+	function cloneArray($array) {
+		$clone = array();
+		foreach ($array as $key=>$val) {
+			$clone[$key] = $val;
+		}
+		return $clone;
+	}
+	
 	function endElement($parser, $name) {
 	    $this->parserDepth[$parser]--;
 		switch($name) {
+			case "OBJECTS":
+				if ($this->currentDesign) {
+					$this->status = "DESIGN";
+				}
+				break;
+			case "OBJECT":
+				if ($this->currentDesign) {
+					$this->currentDesign["objects"][] = $this->currentObject;
+				}
+				$this->currentObject = NULL;
+				break;
+			case "LINES":
+				if ($this->currentDesign) {
+					$this->status = "DESIGN";
+				}
+				break;
+			case "LINE":
+				if ($this->currentDesign) {
+					$this->currentDesign["lines"][] = $this->currentLine;
+				}
+				break;
+			case "AREAS":
+				if ($this->currentDesign) {
+					$this->status = "DESIGN";
+				}
+				break;
+			case "AREA":
+				if ($this->currentDesign) {
+					$this->currentDesign["areas"][] = $this->currentArea;
+				}
+				break;
+			case "ASSETS":
+				if ($this->currentDesign) {
+					$this->status = "DESIGN";
+				}
+				break;
+			case "ASSET":
+				if ($attrs && array_key_exists("REFID", $attrs)) {
+					print "A";
+				} else {
+					if ($this->currentDesign) {
+						$key = trim($this->currentAssetId);
+						$this->currentDesign["assets"][$key] = $this->currentAsset;
+					}
+				}
+				
+				break;
 			case "USERS":
 				break;
 			case "USER":
@@ -424,7 +555,6 @@ class SimpleParser {
 					$this->result["users"] = array();
 				}
 				$this->result["users"][] = $this->currentUser;
-				$this->currentUser = NULL;
 				break;
 			case "PROJECTS":
 				break;
@@ -433,31 +563,28 @@ class SimpleParser {
 					$this->result["projects"] = array();
 				}
 				$this->result["projects"][] = $this->currentProject;
-				$this->currentProject = NULL;
 				break;
 			case "FLOOR":
 				if ($this->currentProject) {
 					$this->currentProject["floors"][] = $this->currentFloor;
-					$this->currentObject = "PROJECT";
+					$this->status = "PROJECT";
 				} else {
 					if (!array_key_exists("floors", $this->result)) {
 						$this->result["floors"] = array();
 					}
 					$this->result["floors"][] = $this->currentFloor;
 				}
-				$this->currentFloor = NULL;
 				break;
 			case "DESIGN":
 				if ($this->currentFloor) {
 					$this->currentFloor["designs"][] = $this->currentDesign;
-					$this->currentObject = "FLOOR";
+					$this->status = "FLOOR";
 				} else {
 					if (!array_key_exists("designs", $this->result)) {
 						$this->result["designs"] = array();
 					}
 					$this->result["designs"][] = $this->currentDesign;
 				}
-				$this->currentDesign = NULL;
 				break;
 			default:
 				break;
@@ -468,7 +595,7 @@ class SimpleParser {
 		$data = preg_replace("/^\s+/", "", $data); 
 		$data = preg_replace("/\s+$/", "", $data);
 		if (strlen($data) ) {	
-			switch ($this->currentObject) {
+			switch ($this->status) {
 				case "PROJECT":
 					$this->currentProject[ $this->currentName ] = $data;
 					break;
@@ -481,9 +608,22 @@ class SimpleParser {
 				case "USER":
 					$this->currentUser[ $this->currentName ] = $data;
 					break;
+				case "ASSET":
+					$this->currentAsset[ $this->currentName ] = $data;
+					break;
+				case "LINE":
+					$this->currentLine[ $this->currentName ] = $data;
+					break;
+				case "AREA":
+					$this->currentArea[ $this->currentName ] = $data;
+					break;
+				case "OBJECT":
+					$this->currentObject[ $this->currentName ] = $data;
+					break;
 				default:
 					break;
 			}
+		//	print $this->currentName . " : " . $data . "<br/>";
 		}
 	}
 }

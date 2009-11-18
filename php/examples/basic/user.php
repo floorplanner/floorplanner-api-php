@@ -8,8 +8,7 @@ $debug = isset($_GET["debug"]) ? $_GET["debug"] : 0;
 $fp = new Floorplanner(API_URL, API_KEY);
 
 if ($act == "delete" && $id > 0) {
-	$user = $fp->getUser($id);
-	$fp->deleteUser($user);
+	$fp->deleteUser($id);
 	header("Location: users.php");
 	die("");
 } else if ($act == "save") {
