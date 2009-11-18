@@ -8,8 +8,8 @@ $edit = isset($_GET["edit"]) ? $_GET["edit"] : 0;
 $fp = new Floorplanner(API_URL, API_KEY);
 
 $design = $fp->getDesign($id);
+$project_id = $design["project-id"];
 
-$project = $fp->getProject($design["project-id"]);
 //die("<pre>" . var_export($design) . "</pre>");
 ?>
 <html>
@@ -20,7 +20,7 @@ $project = $fp->getProject($design["project-id"]);
 		<script type="text/javascript">
 			var token = "<?=$token;?>";
 			var designId = <?=$id;?>;
-			var projectId = <?=$project["id"];?>;
+			var projectId = <?=$project_id;?>;
 			var editMode = <?=$edit;?>;
 			
 			function embedFloorplanner() {

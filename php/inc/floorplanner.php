@@ -3,16 +3,26 @@
  *
  */
 
-define ("API_URL", "http://www.floorplanner.com/");
+/** Your API key here. */
 define ("API_KEY", "43d9290d0301000e9d689192c14f3df4719cc501");
+
+/** Always 'x.' */
 define ("API_USER", "x");
+
+/** Floorplanner API endpoint. */
+define ("API_URL", "http://www.floorplanner.com/");
 
 /**
  *
  */
 class Floorplanner {
 	
+	/** Floorplanner server response HTTP headers. */
 	var $responseHeaders;
+	
+	/** Floorplanner API response. */
+	var $responseXml;
+	
 	var $projectFields;
 	var $userFields;
 	var $_host;
@@ -108,9 +118,12 @@ class Floorplanner {
 				$parts = explode(":", $value);
 				$key = trim($parts[0]);
 				$val = trim($parts[1]);
-				$this->responseHeaders[$key] = $val;
+				$this->responseHeaders[$key] = $val;	
 			}
-
+			
+			$status = (int) $this->responseHeaders["Status"];
+		//	die("<pre>" . var_export($this->responseHeaders , 1). "</pre>");
+			
 			return $result;
 		}
 	}
