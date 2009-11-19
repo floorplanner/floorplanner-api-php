@@ -15,7 +15,7 @@ define ("API_URL", "http://www.floorplanner.com/");
 /**
  *
  */
-class Floorplanner {
+class Floorplanner extends FMLParser {
 	
 	/** Floorplanner server response HTTP headers. */
 	var $responseHeaders;
@@ -121,8 +121,7 @@ class Floorplanner {
 			
 			// parse the FML to an associative array
 			if ($method == "GET") {
-				$fmlParser = new SimpleParser();
-				$result = $fmlParser->parse($this->responseXml);
+				$result = $this->parseFML($this->responseXml);
 				//die("<pre>".htmlentities($this->responseXml)."</pre>");
 				//die("<pre>".var_export($result, 1)."</pre>");
 			}
@@ -193,16 +192,6 @@ class Floorplanner {
 		}
 		$xml .= "</" . $nodeName . ">";
 		return $xml;
-	}
-	
-	/**
-	 *
-	 */
-	function createDesign($design) {
-		$endpoint = "/designs.xml";
-		$payload = $this->toXml($design, "design");
-		if ($this->apiCall($endpoint, "POST", $payload)) {
-		}
 	}
 	
 	/**
@@ -351,9 +340,9 @@ class Floorplanner {
 }
 
 /**
- * Simple XML parser.
+ * Simple FML parser.
  */
-class SimpleParser {
+class FMLParser {
 	var $projects;
 	var $users;
 	var $floors;
@@ -374,15 +363,15 @@ class SimpleParser {
 	var $currentAttrs;
 	var $currentAssetId;
 	
-	function SimpleParser() {
+	function FMLParser() {
 	}
 	
-	function parse($xml) {
+	function parseFML($xml) {
 		$this->result = array();
 		$xml_parser = xml_parser_create();
 		xml_set_object ( $xml_parser, $this );
 		xml_set_element_handler($xml_parser, "startElement", "endElement");
-		xml_set_character_data_handler($xml_parser, "contents");
+		xml_set_character_data_handler($xml_parser, "character_data");
 		if (!xml_parse($xml_parser, $xml, true)) {
 			die(sprintf("XML error: %s at line %d", 
 				xml_error_string(xml_get_error_code($xml_parser)),
@@ -394,8 +383,6 @@ class SimpleParser {
 	
 	function startElement($parser, $name, $attrs) {
 	    $this->parserDepth[$parser]++;
-	//	$this->currentLine = $this->currentObject = $this->currentArea = $this->currentAsset = NULL;
-		
 
 		switch($name) {
 			case "OBJECTS":
@@ -489,14 +476,6 @@ class SimpleParser {
 				break;
 		}
 	}
-
-	function cloneArray($array) {
-		$clone = array();
-		foreach ($array as $key=>$val) {
-			$clone[$key] = $val;
-		}
-		return $clone;
-	}
 	
 	function endElement($parser, $name) {
 	    $this->parserDepth[$parser]--;
@@ -539,14 +518,12 @@ class SimpleParser {
 				break;
 			case "ASSET":
 				if ($attrs && array_key_exists("REFID", $attrs)) {
-					print "A";
 				} else {
 					if ($this->currentDesign) {
 						$key = trim($this->currentAssetId);
 						$this->currentDesign["assets"][$key] = $this->currentAsset;
 					}
 				}
-				
 				break;
 			case "USERS":
 				break;
@@ -591,7 +568,7 @@ class SimpleParser {
 		}
 	}
 	
-	function contents($parser, $data) {
+	function character_data($parser, $data) {
 		$data = preg_replace("/^\s+/", "", $data); 
 		$data = preg_replace("/\s+$/", "", $data);
 		if (strlen($data) ) {	
@@ -623,7 +600,6 @@ class SimpleParser {
 				default:
 					break;
 			}
-		//	print $this->currentName . " : " . $data . "<br/>";
 		}
 	}
 }

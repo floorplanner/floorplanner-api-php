@@ -10,21 +10,9 @@ $act = isset($_GET["act"]) ? $_GET["act"] : "show";
 
 $fp = new Floorplanner(API_URL, API_KEY);
 
-if ($act == "create_design") {
-	$design = array();
-	$design["name"] = "New Design";
-	$design["project-id"] = $_GET["project_id"];
-	$design["floor-id"] = $_GET["floor_id"];
-	$fp->createDesign($design);
-	header("Location: project.php?id=" . $design["project-id"]);
-	die("");
-}
-
 if ($id >= 0) {
 	$design = $fp->getDesign($id);
 	$project_id = $design["project-id"];
-} else if ($project_id >= 0) {
-	
 }
 
 //die("<pre>" . htmlentities($fp->responseXml) . "\n\n" . var_export($design, 1) . "</pre>");
@@ -62,20 +50,12 @@ if ($id >= 0) {
 				fp.embed("floorplannnerView");
 			}
 			
-			function test() {	
-				try {
-					fp.showForm("ADD_FLOOR");
-				} catch(e) {
-					alert(e);
-				}
-			}
-			
 		</script>
 	</head>
 	
 	<body onload="embedFloorplanner()">
 		<div>
-			<h3>design</h3>
+			<h3>design "<?=$design["name"];?>"</h3>
 			<a href="project.php?id=<?=$project_id;?>">back</a>
 			<?php
 				if ($edit > 0) {
