@@ -31,9 +31,14 @@ if ($act == "delete" && $id > 0) {
 	die("");
 }
 
+$form = "";
+$projects = NULL;
+
+// retreive user info
 $user = $id > 0 ? $fp->getUser($id) : NULL;
 
-$form = "";
+// retreive user's projects
+$projects = $id > 0 ? $fp->getUserProjects($id) : NULL;
 ?>
 <html>
 	<head>
@@ -50,6 +55,10 @@ $form = "";
 				// build menu
 				print "<a href=\"user.php?act=new\">create user</a> | ";
 				print "<a href=\"user.php?id={$id}&act=delete\">delete user</a> | ";
+				if (isset($projects)) {
+					print "<a href=\"projects.php?user_id={$id}\">user projects</a> | ";
+				}
+				print "<a href=\"project.php?user_id={$id}&act=new\">create user project</a> | ";
 				print "<a href=\"users.php\">back</a> | ";
 				print "<a href=\"index.php\">home</a>";
 				print "<hr />";
@@ -74,6 +83,7 @@ $form = "";
 		<?=$form;?>
 		</form>
 		<?php
+			
 			if ($debug && $user) {
 				print "<hr/><pre>" . var_export($user, 1) . "</pre>";
 			}

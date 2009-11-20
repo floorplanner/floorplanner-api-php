@@ -2,6 +2,7 @@
 require "../../inc/floorplanner.php";
 
 $id = isset($_GET["id"]) ? $_GET["id"] : -1;
+$user_id = isset($_GET["user_id"]) ? $_GET["user_id"] : -1;
 $act = isset($_GET["act"]) ? $_GET["act"] : "show";
 
 $fp = new Floorplanner(API_URL, API_KEY);
@@ -16,8 +17,14 @@ if ($act == "delete" && $id > 0) {
 		if ($key == "act") continue;
 		$project[$key] = $val;
 	}
-	$fp->createProject($project);
-	header("Location: projects.php");
+	if ($user_id > 0) {
+		$project["user-id"] = $user_id;
+		$fp->createUserProject($user_id, $project);
+		header("Location: user.php?id=$user_id");
+	} else {
+		$fp->createProject($project);
+		header("Location: projects.php");
+	}
 	die("");
 } else if ($act == "update") {
 	$project = array();
@@ -63,6 +70,7 @@ $form = "";
 				print "<hr />";
 				$form = $fp->buildForm(array(), $fp->projectFields, false);
 				$form .= "<input type=\"hidden\" name=\"act\" value=\"save\"></input>";
+				$form .= "<input type=\"hidden\" name=\"user_id\" value=\"{$user_id}\"></input>";
 				$form .= "<input type=\"submit\" value=\"save\"></input>";
 			} else if ($act == "edit") {
 				print "<a href=\"projects.php\">back</a> | ";

@@ -199,12 +199,7 @@ class Floorplanner extends FMLParser {
 	 */
 	function createProject($project) {
 		$endpoint = "/projects.xml";
-		
-		$project["floors-count"] = 2;
-			
 		$payload = $this->toXml($project, "project");
-		
-	//	die("<pre>" . htmlentities($payload) . "</pre>");
 		if ($this->apiCall($endpoint, "POST", $payload)) {
 		}
 	}
@@ -215,6 +210,16 @@ class Floorplanner extends FMLParser {
 	function createUser($user) {
 		$endpoint = "/users.xml";
 		$payload = $this->toXml($user, "user");
+		if ($this->apiCall($endpoint, "POST", $payload)) {
+		}
+	}
+	
+	/**
+	 *
+	 */
+	function createUserProject($user_id, $project) {
+		$endpoint = "/users/{$user_id}/projects.xml";
+		$payload = $this->toXml($project, "project");
 		if ($this->apiCall($endpoint, "POST", $payload)) {
 		}
 	}
@@ -300,6 +305,19 @@ class Floorplanner extends FMLParser {
 		$result = $this->apiCall($endpoint);
 		if ($result && array_key_exists("users", $result)) {
 			return $result["users"][0];
+		} else {
+			return NULL;
+		}
+	}
+	
+	/**
+	 *
+	 */
+	function getUserProjects($user_id) {
+		$endpoint = "/users/{$user_id}/projects.xml";
+		$result = $this->apiCall($endpoint);
+		if ($result && array_key_exists("projects", $result)) {
+			return $result["projects"];
 		} else {
 			return NULL;
 		}
