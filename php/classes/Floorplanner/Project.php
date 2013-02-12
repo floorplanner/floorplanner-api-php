@@ -52,6 +52,31 @@ class Floorplanner_Project extends Floorplanner_Object {
 		$javascript .= "fp.embed('${div}');\n";
 		return $javascript;
 	}
+
+    /**
+     * resolution[width]    - The width of the image(s) in pixels (or millimeters for PDF)
+     * resolution[height]   - The height of the image(s) in pixels (or millimeters for PDF)
+
+     Optional:
+     * send_to              - result will be sent to given email address
+     * callback             - After all design images have been exported, the callback URL will receive a POST request containing XML result message
+     * type                 - MIME type of requested export format
+     * paper_scale          - Number between 0.002 and 0.02 (PDF only, see design export)
+     * scaling              - if set to 'constant', all designs will be scaled by the same ratio
+     * scalebar             - set to 1 or “true” to include a scale bar in the output image
+     * black_white          - Boolean value (true/false) of whether the output should be in grayscale
+     */
+    public function render($width, $height, $send_to="nobody@example.com") {
+        $response = $this->apiCall($this->path() . '/render', 'POST',
+            array('resolution' => array('width'=>$width, 'height'=>$height),
+                  'send_to' => $send_to)
+        );
+        if (Floorplanner::success($response)) {
+            var_dump($response);
+        } else {
+            throw new Floorplanner_Exception($response);
+        }
+    }
 	
 }
 
